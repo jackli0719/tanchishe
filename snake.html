@@ -447,6 +447,8 @@
                     showLevelUp();
                     // 升级时稍微增加速度
                     speedMultiplier = Math.min(2.5, 1 + (level - 1) * 0.15);
+                    // 立即更新游戏速度
+                    startGameLoop();
                 }
                 
                 // 更新最高分
