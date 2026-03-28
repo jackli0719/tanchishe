@@ -62,30 +62,64 @@
         .mobile-controls { display: none; justify-content: center; gap: 6px; margin-top: 8px; }
         
         @media (max-width: 600px) and (orientation: portrait) {
-            .mobile-controls { display: flex; flex-wrap: wrap; justify-content: center; }
+            .mobile-controls { 
+                display: flex; 
+                flex-wrap: wrap; 
+                justify-content: center;
+                padding-bottom: env(safe-area-inset-bottom, 20px);
+                padding-top: 10px;
+            }
             .desktop-controls { display: none; }
-            h1 { font-size: 18px; }
-            .score-board { font-size: 11px; gap: 6px; }
-            .score-item { padding: 4px 8px; }
+            h1 { font-size: 20px; }
+            .score-board { font-size: 12px; gap: 6px; }
+            .score-item { padding: 5px 10px; }
             .start-quick-btn { 
-                padding: 12px 24px; 
-                font-size: 16px;
+                padding: 16px 32px; 
+                font-size: 18px;
                 width: 100%;
-                max-width: 200px;
+                max-width: 240px;
+                margin: 15px auto;
+                display: block;
             }
             .start-btn {
-                padding: 12px 30px;
-                font-size: 16px;
+                padding: 16px 40px;
+                font-size: 18px;
             }
+            /* 微信浏览器适配 - 更大的按钮 */
+            .d-pad { 
+                grid-template-columns: repeat(3, 75px); 
+                gap: 12px;
+                padding: 15px;
+                margin-top: 15px;
+            }
+            .btn { 
+                width: 75px; 
+                height: 75px; 
+                font-size: 32px;
+            }
+            canvas { margin: 10px 0; }
         }
         
         @media (max-width: 600px) and (orientation: landscape) {
             .mobile-controls { display: none !important; }
         }
         
-        .d-pad { display: grid; grid-template-columns: repeat(3, 45px); gap: 4px; }
-        .btn { width: 45px; height: 45px; background: linear-gradient(145deg, #2a2a4a, #1a1a3a); border: 2px solid #4a4a6a; border-radius: 10px; color: #eee; font-size: 16px; display: flex; align-items: center; justify-content: center; cursor: pointer; }
-        .btn:active { transform: scale(0.95); }
+        .d-pad { display: grid; grid-template-columns: repeat(3, 60px); gap: 8px; }
+        .btn { 
+            width: 60px; 
+            height: 60px; 
+            background: linear-gradient(145deg, #2a2a4a, #1a1a3a); 
+            border: 2px solid #4a4a6a; 
+            border-radius: 12px; 
+            color: #eee; 
+            font-size: 24px; 
+            display: flex; 
+            align-items: center; 
+            justify-content: center; 
+            cursor: pointer;
+            touch-action: manipulation;
+        }
+        .btn:active { transform: scale(0.95); background: linear-gradient(145deg, #3a3a5a, #2a2a4a); }
         
         /* 弹窗 */
         .overlay { position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.85); display: flex; flex-direction: column; align-items: center; justify-content: center; border-radius: 8px; z-index: 10; }
@@ -147,7 +181,7 @@
         <div class="mode-select">
             <button class="mode-btn active" onclick="setMode('classic')">经典模式</button>
             <button class="mode-btn" onclick="setMode('timed')">限时60秒</button>
-            <button class="start-quick-btn" onclick="quickStart()">▶️ 开始</button>
+            <button class="start-quick-btn" onclick="quickStart()">▶️ 开始游戏</button>
         </div>
         
         <div style="position: relative;">
@@ -190,7 +224,7 @@
         </div>
         
         <div class="controls-area">
-            <div class="desktop-controls">方向键/滑动 / 双击暂停 / 加速长按Shift</div>
+            <div class="desktop-controls">方向键/WASD 控制 / 空格暂停 / 双击暂停 / Shift加速</div>
             <div class="mobile-controls">
                 <button class="btn" onclick="setDir(0,-1)">⬆️</button>
             </div>
@@ -553,9 +587,9 @@
             document.getElementById('pauseScreen').classList.add('hidden');
         }
         
-        // 键盘控制
+        // 键盘控制 (方向键 + WASD)
         document.addEventListener('keydown', e => {
-            if (['ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight', 'Space'].includes(e.code)) e.preventDefault();
+            if (['ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight', 'Space', 'KeyW', 'KeyA', 'KeyS', 'KeyD'].includes(e.code)) e.preventDefault();
             
             if (e.code === 'Space') {
                 if (!gameRunning) startGame();
@@ -565,10 +599,16 @@
             }
             if (!gameRunning) return;
             
+            // 方向键
             if (e.key === 'ArrowUp' && lastDirection.y !== 1) { nextDx = 0; nextDy = -1; }
             else if (e.key === 'ArrowDown' && lastDirection.y !== -1) { nextDx = 0; nextDy = 1; }
             else if (e.key === 'ArrowLeft' && lastDirection.x !== 1) { nextDx = -1; nextDy = 0; }
             else if (e.key === 'ArrowRight' && lastDirection.x !== -1) { nextDx = 1; nextDy = 0; }
+            // WASD键
+            else if ((e.key === 'w' || e.key === 'W') && lastDirection.y !== 1) { nextDx = 0; nextDy = -1; }
+            else if ((e.key === 's' || e.key === 'S') && lastDirection.y !== -1) { nextDx = 0; nextDy = 1; }
+            else if ((e.key === 'a' || e.key === 'A') && lastDirection.x !== 1) { nextDx = -1; nextDy = 0; }
+            else if ((e.key === 'd' || e.key === 'D') && lastDirection.x !== -1) { nextDx = 1; nextDy = 0; }
         });
         
         // 触摸控制
