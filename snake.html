@@ -80,21 +80,38 @@
         .mobile-controls {
             display: none;
             justify-content: center;
-            gap: 10px;
+            gap: 8px;
             margin-top: 10px;
         }
-        @media (max-width: 500px) {
-            .mobile-controls { display: flex; }
+        
+        /* 横屏时隐藏虚拟按钮，使用滑动操作 */
+        @media (max-width: 600px) and (orientation: landscape) {
+            .mobile-controls { display: none !important; }
+        }
+        
+        @media (max-width: 600px) and (orientation: portrait) {
+            .mobile-controls { 
+                display: flex; 
+                flex-wrap: wrap;
+                justify-content: center;
+            }
             .desktop-controls { display: none; }
-            h1 { font-size: 22px; }
-            .score-board { font-size: 14px; gap: 10px; }
+            h1 { font-size: 20px; }
+            .score-board { 
+                font-size: 12px; 
+                gap: 8px;
+                flex-wrap: wrap;
+                justify-content: center;
+            }
+            .score-item { padding: 5px 10px; }
+            canvas { max-width: 95vw; }
         }
         
         .d-pad {
             display: grid;
-            grid-template-columns: repeat(3, 50px);
-            grid-template-rows: repeat(2, 50px);
-            gap: 5px;
+            grid-template-columns: repeat(3, 55px);
+            grid-template-rows: repeat(2, 55px);
+            gap: 6px;
         }
         
         .btn {
@@ -548,10 +565,13 @@
             }
         });
         
-        // 触摸控制
+        // 触摸控制 - 优化移动端体验
+        let touchStartTime = 0;
+        
         canvas.addEventListener('touchstart', e => {
             touchStartX = e.touches[0].clientX;
             touchStartY = e.touches[0].clientY;
+            touchStartTime = Date.now();
             e.preventDefault();
         }, { passive: false });
         
@@ -564,8 +584,26 @@
             const touchEndY = e.changedTouches[0].clientY;
             const diffX = touchEndX - touchStartX;
             const diffY = touchEndY - touchStartY;
-            const minSwipe = 30;
+            const touchDuration = Date.now() - touchStartTime;
             
+            // 区分点击和滑动
+            const minSwipe = 20;
+            const maxTapTime = 200;
+            
+            // 双击暂停/继续
+            if (touchDuration < maxTapTime && Math.abs(diffX) < 10 && Math.abs(diffY) < 10) {
+                if (paused) {
+                    resumeGame();
+                } else {
+                    pauseGame();
+                }
+                touchStartX = 0;
+                touchStartY = 0;
+                e.preventDefault();
+                return;
+            }
+            
+            // 滑动控制
             if (Math.abs(diffX) > Math.abs(diffY)) {
                 if (Math.abs(diffX) > minSwipe) {
                     if (diffX > 0 && lastDirection.x !== -1) {
