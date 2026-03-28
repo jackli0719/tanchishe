@@ -61,49 +61,47 @@
         .desktop-controls { color: #888; font-size: 11px; text-align: center; margin-bottom: 8px; }
         .mobile-controls { display: none; justify-content: center; gap: 6px; margin-top: 8px; }
         
-        /* 手机端默认显示虚拟按钮 */
-        @media (max-width: 600px) {
+        /* 手机端/触摸设备显示虚拟按钮 */
+        @media (pointer: coarse), (max-width: 768px) {
             .mobile-controls { 
                 display: flex; 
                 flex-wrap: wrap; 
                 justify-content: center;
-                padding-bottom: env(safe-area-inset-bottom, 20px);
-                padding-top: 10px;
+                padding: 12px;
+                margin-top: 10px;
             }
             .desktop-controls { display: none; }
-            h1 { font-size: 20px; }
-            .score-board { font-size: 12px; gap: 6px; }
-            .score-item { padding: 5px 10px; }
+            h1 { font-size: 22px; }
+            .score-board { font-size: 13px; gap: 8px; }
             .start-quick-btn { 
-                padding: 16px 32px; 
-                font-size: 18px;
+                padding: 18px 36px; 
+                font-size: 20px;
                 width: 100%;
-                max-width: 240px;
+                max-width: 280px;
                 margin: 15px auto;
                 display: block;
             }
-            .start-btn {
-                padding: 16px 40px;
-                font-size: 18px;
-            }
-            /* 微信浏览器适配 - 更大的按钮 */
+            .start-btn { padding: 18px 40px; font-size: 20px; }
+            /* 大按钮 */
             .d-pad { 
-                grid-template-columns: repeat(3, 75px); 
-                gap: 12px;
+                display: flex;
+                flex-wrap: wrap;
+                justify-content: center;
+                gap: 15px;
                 padding: 15px;
-                margin-top: 15px;
             }
             .btn { 
-                width: 75px; 
-                height: 75px; 
-                font-size: 32px;
+                width: 80px; 
+                height: 80px; 
+                font-size: 36px;
             }
             canvas { margin: 10px 0; }
         }
         
-        @media (max-width: 600px) and (orientation: landscape) {
-            .d-pad { grid-template-columns: repeat(3, 50px); }
+        /* 横屏时按钮缩小 */
+        @media (max-height: 500px) and (orientation: landscape) {
             .btn { width: 50px; height: 50px; font-size: 24px; }
+            .d-pad { gap: 8px; padding: 8px; }
         }
         
         .d-pad { display: grid; grid-template-columns: repeat(3, 60px); gap: 8px; }
